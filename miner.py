@@ -9,20 +9,11 @@ from helpers.SubredditParser import SubredditParser
 from helpers.db import setup_db
 
 
-SUBREDDITS = [
-                'technology','mildlyinteresting','science','music','movies','books','television',
-                'sports', 'politics','todayilearned','worldnews','android','celebs',
-                'oddlysatisfying','nottheonion','books','trees','marijuanaenthusiasts','diablo',
-                'edmproduction','philosophy','programming','lifehacks','freebies','doctorwho','dataisbeautiful',
-                'futurology','linux','canada','libertarian','democrats','republican', 'socialism'
-            ]
-
-
 def mine(db, mined_from=None, entry_count=200, sleep_total=600):
     subreddit_parser = SubredditParser(mined_from)
     entry_parser = EntryParser()
     logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
-                        filename='parser.log',level=logging.DEBUG)
+                        filename='miner.log',level=logging.DEBUG)
 
     last_id = ""
     step_size = entry_count / 10
@@ -49,7 +40,7 @@ def mine(db, mined_from=None, entry_count=200, sleep_total=600):
                 logging.info('Skipped entries %d-%d in %s' % (count, count + (entry_count / 10) - 1, mined_from))
                 break
 
-            sleep(0.05)
+            sleep(0.1)
 
         if not skipped:
             logging.info('Finished mining entries %d-%d in %s' % (count, count + (entry_count / 10) - 1, mined_from))
@@ -58,6 +49,10 @@ def mine(db, mined_from=None, entry_count=200, sleep_total=600):
 def main():
     threads = []
     db = setup_db()
+
+    with open('subreddits.txt') as f:
+        SUBREDDITS = f.read.split('\n')
+
     for index in xrange(0, len(SUBREDDITS), 4):
         for x in xrange(index, index + 4):
             if x >= len(SUBREDDITS):

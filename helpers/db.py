@@ -5,7 +5,7 @@ def setup_db():
         "has_tables": 'SELECT EXISTS(SELECT * FROM information_schema.tables WHERE table_name=\'entries\') as exists;',
         "create_entries": """CREATE TABLE entries (
             id SERIAL NOT NULL, reddit_id TEXT, title TEXT, link TEXT, subreddit TEXT,
-            downvotes INTEGER, mined_from TEXT,
+            downvotes INTEGER, mined_from TEXT, rank INTEGER,
             observed TIMESTAMP, upvotes INTEGER, article TEXT,
             PRIMARY KEY (id)
         );""",

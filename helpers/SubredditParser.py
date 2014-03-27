@@ -5,15 +5,17 @@ from bs4 import BeautifulSoup
 
 class SubredditParser(object):
     PROHIBITED_DOMAINS = ['imgur','instagram', 'flickr', 'photobucket', 'memebase', '9gag', 'failblog', 'quickmeme', 'youtube', 'vimeo']
-    PROHIBITED_FORMATS = ['gif', 'jpeg', 'jpg', 'png']
+    PROHIBITED_FORMATS = ['.gif', '.jpeg', '.jpg', '.png']
 
     def __init__(self, reddit):
         self.reddit = reddit
         self.url = 'http://www.reddit.com' + ('/r/%s/top' % self.reddit if self.reddit is not None else '')
 
+    def parse_unfiltered_entries(self, limit=100, after=''):
+        return self.get_dataset(self.get_document(after, limit))
 
     def parse_entries(self, limit=100, after=''):
-        unfiltered = self.get_dataset(self.get_document(after, limit))
+        unfiltered = self.parse_unfiltered_entries(limit, after)
         return filter(self.filter, unfiltered)
 
 
@@ -23,6 +25,8 @@ class SubredditParser(object):
             "after": after,
             "sort": "top",
             "t": "all"
+        }, headers={
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36'
         }).text)
 
     def get_dataset(self, document):
