@@ -7,6 +7,8 @@ from time import sleep
 from random import randint
 from helpers.SubredditParser import SubredditParser
 
+THRESHOLD = 5
+
 def html_mapper(row):
     cells = row.select('td')
     if len(cells) > 0:
@@ -19,24 +21,25 @@ def parse_subreddits(document):
 def main(total):
     logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
                         filename='subreddits.log',level=logging.DEBUG)
-    subreddits = []
 
     page = 1
+    accepted = 0
     with open('subreddits.txt', 'w') as f:
-        while len(subreddits) < total:
+        while accepted < total:
             document = BeautifulSoup(requests.get('http://www.redditlist.com/page-%d' % page).text)
 
             parsed = parse_subreddits(document)
             for subreddit in parsed:
                 entries = SubredditParser(subreddit).parse_entries(100)
-                if len(entries) > 20:
-                    subreddits.append(subreddit)
+                if len(entries) > THRESHOLD:
+                    accepted += 1
                     f.write(subreddit + '\n')
+                    f.flush()
                     logging.info("Added: Subreddit %s, article count %d" % (subreddit, len(entries)))
                 else:
                     logging.info("Rejected: Subreddit %s, article count %d" % (subreddit, len(entries)))
 
-                if len(subreddits) >= total:
+                if accepted >= total:
                     break
 
                 sleep(randint(1, 3))

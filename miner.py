@@ -17,11 +17,18 @@ def mine(db, mined_from=None, entry_count=200, sleep_total=600):
 
     last_id = ""
     step_size = entry_count / 10
-    for count in xrange(0, entry_count, step_size):
+
+    accepted = 0
+    count = 0
+    while accepted < entry_count:
+
         skipped = False
 
         entries = subreddit_parser.parse_entries(step_size, last_id)
         for i, entry in enumerate(entries):
+            if accepted >= total:
+                break
+
             if i == len(entries) - 1:
                 last_id = entry['reddit_id']
 
@@ -40,10 +47,13 @@ def mine(db, mined_from=None, entry_count=200, sleep_total=600):
                 logging.info('Skipped entries %d-%d in %s' % (count, count + (entry_count / 10) - 1, mined_from))
                 break
 
+            accepted += 1
             sleep(0.1)
 
         if not skipped:
             logging.info('Finished mining entries %d-%d in %s' % (count, count + (entry_count / 10) - 1, mined_from))
+
+        count += step_size
 
 
 def main():
