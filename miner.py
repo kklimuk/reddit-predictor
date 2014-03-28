@@ -16,13 +16,14 @@ def mine(db, mined_from=None, entry_count=200, sleep_total=600):
                         filename='miner.log',level=logging.DEBUG)
 
     last_id = ""
+    previous_last_id = ""
     step_size = entry_count / 10
 
     accepted = 0
     count = 0
     while accepted < entry_count:
 
-        if count > entry_count * 5:
+        if last_id and previous_last_id == last_id:
             break
 
         skipped = False
@@ -33,6 +34,7 @@ def mine(db, mined_from=None, entry_count=200, sleep_total=600):
                 break
 
             if i == len(entries) - 1:
+                previous_last_id = last_id
                 last_id = entry['reddit_id']
 
             saved_entry = db['entries'].find_one(reddit_id=entry['reddit_id'])
