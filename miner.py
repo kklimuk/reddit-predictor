@@ -16,26 +16,22 @@ def mine(db, mined_from=None, entry_count=200, sleep_total=600):
                         filename='miner.log',level=logging.DEBUG)
 
     last_id = ""
-    previous_last_id = ""
     step_size = entry_count / 10
 
     accepted = 0
     count = 0
     while accepted < entry_count:
-
-        if last_id and previous_last_id == last_id:
-            break
-
         skipped = False
+        has_changed = False
 
         entries = subreddit_parser.parse_entries(step_size, last_id)
         for i, entry in enumerate(entries):
+            if i == len(entries) - 1:
+                has_changed = True
+                last_id = entry['reddit_id']
+
             if accepted >= entry_count:
                 break
-
-            if i == len(entries) - 1:
-                previous_last_id = last_id
-                last_id = entry['reddit_id']
 
             saved_entry = db['entries'].find_one(reddit_id=entry['reddit_id'])
 
@@ -49,14 +45,18 @@ def mine(db, mined_from=None, entry_count=200, sleep_total=600):
                 db['entries'].insert(entry)
             else:
                 skipped = True
-                logging.info('Skipped entries %d-%d in %s' % (count, count + (entry_count / 10) - 1, mined_from))
+                logging.info('Skipped: %d-%d in %s' % (count, count + (entry_count / 10) - 1, mined_from))
                 break
 
             accepted += 1
             sleep(0.1)
 
+        if not has_changed:
+            logging.info('Unchanged: entries %d-%d in %s' % (count, count + (entry_count / 10) - 1, mined_from))
+            break
+
         if not skipped:
-            logging.info('Finished mining entries %d-%d in %s' % (count, count + (entry_count / 10) - 1, mined_from))
+            logging.info('Finished: entries %d-%d in %s' % (count, count + (entry_count / 10) - 1, mined_from))
 
         count += step_size
 
