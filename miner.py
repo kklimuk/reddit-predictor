@@ -26,7 +26,7 @@ def mine(db, mined_from=None, entry_count=200, sleep_total=600):
 
         entries = subreddit_parser.parse_entries(step_size, last_id)
         for i, entry in enumerate(entries):
-            if accepted >= total:
+            if accepted >= entry_count:
                 break
 
             if i == len(entries) - 1:
