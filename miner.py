@@ -61,7 +61,7 @@ def main():
     db = setup_db()
 
     with open('subreddits.txt') as f:
-        SUBREDDITS = f.read.split('\n')
+        SUBREDDITS = f.read().split('\n')
 
     for index in xrange(0, len(SUBREDDITS), 4):
         for x in xrange(index, index + 4):
