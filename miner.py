@@ -58,7 +58,7 @@ def mine(db, mined_from=None, entry_count=200):
                         accepted += 1
                     except Exception, error:
                         logging.error("Error: %s %s" % (mined_from, error))
-                        sleep(randint(2, 4))
+                        sleep(randint(5, 10))
             else:
                 skipped = True
                 logging.info('Skipped: %d-%d in %s' % (i, count + len(entries) - 1, mined_from))
