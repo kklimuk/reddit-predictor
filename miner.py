@@ -67,6 +67,7 @@ def main():
 
     with open('subreddits.txt') as f:
         SUBREDDITS = f.read().split('\n')
+	print SUBREDDITS
 
     for index in xrange(0, len(SUBREDDITS), 4):
         for x in xrange(index, index + 4):
