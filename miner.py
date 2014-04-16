@@ -31,10 +31,10 @@ def mine(db, mined_from=None, entry_count=200):
                 entries = subreddit_parser.parse_entries(step_size, last_id)
             except Timeout, error:
                 logging.error('Timeout: %s %s %s' % (mined_from, count, error))
-                sleep(randint(3, 10))
+                sleep(randint(10, 20))
             except Exception, error:
                 logging.error("Error: %s %s" % (mined_from, error))
-                sleep(randint(3, 10))
+                sleep(randint(10, 20))
 
         unchanged = False
         skipped = False
