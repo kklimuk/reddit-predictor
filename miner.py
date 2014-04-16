@@ -72,6 +72,7 @@ def mine(db, mined_from=None, entry_count=200):
             logging.info('Finished: entries %d-%d in %s' % (count, count + len(entries) - 1, mined_from))
 
         count += len(entries)
+        sleep(randint(5, 10))
 
 
 def main():
