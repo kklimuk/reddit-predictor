@@ -70,7 +70,7 @@ def mine(db, mined_from=None, entry_count=200):
                         if retries < 3:
                             logging.error('Error: %s %s %s' % (mined_from, count, error))
                             sleep(randint(10, 20))
-                        elif retries < 5:
+                        elif retries < 8:
                             logging.error('Error: %s %s %s' % (mined_from, count, error))
                             sleep(randint(10, 20))
                             continue
