@@ -32,14 +32,7 @@ class SubredditParser(object):
         if response.status_code != 200:
             raise requests.exceptions.RequestException()
 
-        return BeautifulSoup(requests.get(self.url, params={
-            "limit": limit,
-            "after": after,
-            "sort": "top",
-            "t": "all"
-        }, headers={
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36'
-        }, timeout=0.5).text)
+        return BeautifulSoup(response.text)
 
     def get_dataset(self, document):
         return filter(
