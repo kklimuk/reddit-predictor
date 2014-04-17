@@ -5,7 +5,7 @@ import nltk
 
 class EntryParser(object):
     URL_PREFIX = "https://readability.com/api/content/v1/parser"
-    API_TOKEN = "26e64a97b42cb7576765eab70f7a64d6e10b524d"
+    API_TOKEN = "f4d14c4595eb09d217e729334340e615970c2ba7"
 
     def get_content(self, link):
         response = requests.get(EntryParser.URL_PREFIX, params={

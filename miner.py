@@ -1,6 +1,8 @@
 import logging
 from requests.exceptions import Timeout
 
+import thread
+
 from datetime import datetime
 from threading import Thread
 from time import sleep
@@ -24,17 +26,20 @@ def mine(db, mined_from=None, entry_count=200):
     count = 0
     accepted = 0
 
+    retries = 0
     while accepted < entry_count:
         entries = None
         while entries is None:
             try:
                 entries = subreddit_parser.parse_entries(step_size, last_id)
-            except Timeout, error:
-                logging.error('Timeout: %s %s %s' % (mined_from, count, error))
-                sleep(randint(10, 20))
             except Exception, error:
-                logging.error("Error: %s %s" % (mined_from, error))
-                sleep(randint(10, 20))
+                retries += 1
+                if retries < 3:
+                    logging.error('Timeout: %s %s %s' % (mined_from, count, error))
+                    sleep(randint(10, 20))
+                else:
+                    thread.exit()
+
 
         unchanged = False
         skipped = False
@@ -57,8 +62,12 @@ def mine(db, mined_from=None, entry_count=200):
                         db['entries'].insert(entry)
                         accepted += 1
                     except Exception, error:
-                        logging.error("Error: %s %s" % (mined_from, error))
-                        sleep(randint(5, 10))
+                        retries += 1
+                        if retries < 3:
+                            logging.error('Timeout: %s %s %s' % (mined_from, count, error))
+                            sleep(randint(10, 20))
+                        else:
+                            thread.exit()
             else:
                 skipped = True
                 logging.info('Skipped: %d-%d in %s' % (i, count + len(entries) - 1, mined_from))
