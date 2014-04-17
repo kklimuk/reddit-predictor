@@ -81,7 +81,7 @@ def mine(db, mined_from=None, entry_count=200):
                 logging.info('Skipped: %d-%d in %s' % (i, count + len(entries) - 1, mined_from))
                 break
 
-            sleep(0.65)
+            sleep(randint(1, 3))
 
         if unchanged:
             break
@@ -106,7 +106,7 @@ def main():
             thread = Thread(target=mine, args=(db,), kwargs={ "mined_from": SUBREDDITS[x] })
             thread.start()
             threads.append(thread)
-            sleep(1)
+            sleep(randint(3, 5))
 
         for i, thread in enumerate(threads):
             logging.info('Finished thread: %s' % SUBREDDITS[index + i])
