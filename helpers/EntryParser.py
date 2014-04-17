@@ -13,7 +13,7 @@ class EntryParser(object):
             'token': EntryParser.API_TOKEN 
         }, headers={
             'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.116 Safari/537.36'
-        }, timeout=0.5)
+        }, timeout=2)
 
         if response.content is None:
             raise requests.exceptions.RequestException()

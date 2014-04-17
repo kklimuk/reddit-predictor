@@ -27,7 +27,7 @@ class SubredditParser(object):
             "after": after,
             "sort": "top",
             "t": "all"
-        }, timeout=0.5)
+        }, timeout=2)
 
         if response.status_code != 200:
             raise requests.exceptions.RequestException()
