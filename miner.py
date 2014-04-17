@@ -37,6 +37,10 @@ def mine(db, mined_from=None, entry_count=200):
                 if retries < 3:
                     logging.error('Timeout: %s %s %s' % (mined_from, count, error))
                     sleep(randint(10, 20))
+                elif retries < 8:
+                    logging.error('Timeout: %s %s %s' % (mined_from, count, error))
+                    sleep(randint(10, 20))
+                    continue
                 else:
                     thread.exit()
 
@@ -64,8 +68,12 @@ def mine(db, mined_from=None, entry_count=200):
                     except Exception, error:
                         retries += 1
                         if retries < 3:
-                            logging.error('Timeout: %s %s %s' % (mined_from, count, error))
+                            logging.error('Error: %s %s %s' % (mined_from, count, error))
                             sleep(randint(10, 20))
+                        elif retries < 5:
+                            logging.error('Error: %s %s %s' % (mined_from, count, error))
+                            sleep(randint(10, 20))
+                            continue
                         else:
                             thread.exit()
             else:
