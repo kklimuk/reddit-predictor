@@ -1,12 +1,16 @@
+Flask==0.10.1
+Jinja2==2.7.2
 Mako==0.9.1
 MarkupSafe==0.19
 PyYAML==3.11
 SQLAlchemy==0.9.3
 Unidecode==0.04.14
+Werkzeug==0.9.4
 alembic==0.6.3
 argparse==1.2.1
 beautifulsoup4==4.3.2
 dataset==0.5.2
+itsdangerous==0.24
 nltk==2.0.4
 psycopg2==2.5.2
 python-slugify==0.0.7

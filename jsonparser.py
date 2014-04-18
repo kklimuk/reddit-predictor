@@ -33,5 +33,5 @@ for entry in parsed:
         except Exception, error:
             logging.error('Error: %s %s %s' % (entry['mined_from'], entry['link'], error))
             continue
-
-    sleep(0.5)
+            
+        sleep(0.5)

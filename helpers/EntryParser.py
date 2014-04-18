@@ -7,7 +7,7 @@ class EntryParser(object):
     URL_PREFIX = "https://readability.com/api/content/v1/parser"
     API_TOKEN = "f4d14c4595eb09d217e729334340e615970c2ba7"
 
-    def get_content(self, link):
+    def _get_data(self,link):
         response = requests.get(EntryParser.URL_PREFIX, params={
             'url': link,
             'token': EntryParser.API_TOKEN 
@@ -18,4 +18,12 @@ class EntryParser(object):
         if response.content is None:
             raise requests.exceptions.RequestException()
 
-        return nltk.clean_html(response.json()['content'])
+        return response.json()
+
+    def get_content(self, link):
+        data = self._get_data(link)
+        return nltk.clean_html(data['content'])
+
+    def get_title_and_content(self, link):
+        data = self._get_data(link)
+        return data['title'], nltk.clean_html(data['content'])
