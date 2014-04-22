@@ -2,21 +2,22 @@ import json
 
 from flask import Flask, send_from_directory, request
 from helpers.EntryParser import EntryParser
+from prediction.PredictEntry import predict_subreddits
 
 app = Flask(__name__)
 entry_parser = EntryParser()
 
 url_map = {}
-fake_answer = {
-	'books': 0.63,
-	'music': 0.24,
-	'news': 0.17,
-	'politics': 0.13,
-	'science': 0.33,
-	'technology': 0.97,
-	'todayilearned': 0.23,
-	'worldnews': 0.19
-}
+# fake_answer = {
+# 	'books': 0.63,
+# 	'music': 0.24,
+# 	'news': 0.17,
+# 	'politics': 0.13,
+# 	'science': 0.33,
+# 	'technology': 0.97,
+# 	'todayilearned': 0.23,
+# 	'worldnews': 0.19
+# }
 
 @app.route('/')
 def index():
@@ -32,10 +33,12 @@ def classifier():
 			title, data = entry_parser.get_title_and_content(url)
 
 			# TODO: get actual numbers from data instead of using the fake answer
+			answer = predict_subreddits(data)
+			print answer
 
 			url_map[url] = json.dumps({
 				'title': title,
-				'data': { key: value for key, value in fake_answer.iteritems() }
+				'data': { key: value for key, value in answer.iteritems() }
 			})
 			return url_map[url]
 	except Exception, e:

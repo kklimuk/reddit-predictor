@@ -60,11 +60,10 @@
 						fillColor : "rgba(151,187,205,0.5)",
 						strokeColor : "rgba(151,187,205,1)",
 						data: Object.keys(response.data).map(function(key) {
-							return response.data[key] * 100;
+							return response.data[key];
 						})
 					}]
 				}, {
-					scaleLabel: '<%=value%>%',
 					scaleShowGridLines: false,
 					scaleStepWidth: 20,
 					scaleSteps: 5
