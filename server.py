@@ -8,16 +8,64 @@ app = Flask(__name__)
 entry_parser = EntryParser()
 
 url_map = {}
-# fake_answer = {
-# 	'books': 0.63,
-# 	'music': 0.24,
-# 	'news': 0.17,
-# 	'politics': 0.13,
-# 	'science': 0.33,
-# 	'technology': 0.97,
-# 	'todayilearned': 0.23,
-# 	'worldnews': 0.19
-# }
+
+import sys
+import nltk
+import cPickle as pickle
+import numpy as np
+from sklearn.feature_extraction.text import CountVectorizer
+import re
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction import DictVectorizer
+from nltk.stem.porter import PorterStemmer
+import tldextract
+import string
+
+
+ALPHABET = '^[a-zA-Z]+$'
+redditStopWords = [line.strip() for line in open("./classification/RedditStopWords.txt")]
+subreddits = ['books','music','politics','science','technology','television','worldnews']
+	
+def clean(text):
+	return re.sub('[%s]' % re.escape(string.punctuation), '', text).strip()
+
+def tokenize(text):
+	tokens = []
+	for token in nltk.wordpunct_tokenize(text):
+		token = clean(token)
+		if len(token) >2 and re.match(ALPHABET,token) and token not in redditStopWords:
+		   tokens.append(token)
+	return tokens
+
+def predict_subreddits(data):
+	#convert all chars to unicode
+	if isinstance(data, str):
+		data = unicode(data, errors='ignore')
+	
+	prediction_map = {}
+	classifier, vect = load_best()    
+	#transform using loaded vectorizer
+	X_test = vect.transform([data])
+
+	print classifier.predict(X_test)
+
+	predictions = classifier.decision_function(X_test)
+	
+	for i, subreddit in enumerate(subreddits):
+		prediction_map[subreddit] = predictions[0][i]
+	
+	return prediction_map
+
+def load_best():
+	f = open('./prediction/84linearsvcClassify.pickle')
+	classifier = pickle.load(f)
+	f.close()
+	
+	f = open('./prediction/84linearsvcVect.pickle')
+	vect = pickle.load(f)
+	f.close()
+	
+	return classifier, vect
 
 @app.route('/')
 def index():
@@ -34,7 +82,6 @@ def classifier():
 
 			# TODO: get actual numbers from data instead of using the fake answer
 			answer = predict_subreddits(data)
-			print answer
 
 			url_map[url] = json.dumps({
 				'title': title,
