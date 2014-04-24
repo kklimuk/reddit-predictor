@@ -1,14 +1,3 @@
-import json
-
-from flask import Flask, send_from_directory, request
-from helpers.EntryParser import EntryParser
-from prediction.PredictEntry import predict_subreddits
-
-app = Flask(__name__)
-entry_parser = EntryParser()
-
-url_map = {}
-
 import sys
 import nltk
 import cPickle as pickle
@@ -47,8 +36,6 @@ def predict_subreddits(data):
 	#transform using loaded vectorizer
 	X_test = vect.transform([data])
 
-	print classifier.predict(X_test)
-
 	predictions = classifier.decision_function(X_test)
 	
 	for i, subreddit in enumerate(subreddits):
@@ -67,6 +54,17 @@ def load_best():
 	
 	return classifier, vect
 
+import json
+
+from flask import Flask, send_from_directory, request
+from helpers.EntryParser import EntryParser
+from prediction.PredictEntry import predict_subreddits
+
+app = Flask(__name__)
+entry_parser = EntryParser()
+
+url_map = {}
+
 @app.route('/')
 def index():
 	return send_from_directory('./', 'index.html')
@@ -79,8 +77,6 @@ def classifier():
 			return url_map[url]
 		else:
 			title, data = entry_parser.get_title_and_content(url)
-
-			# TODO: get actual numbers from data instead of using the fake answer
 			answer = predict_subreddits(data)
 
 			url_map[url] = json.dumps({

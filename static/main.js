@@ -30,47 +30,99 @@
 		});
 	}
 
-	var config = {
-		submit: null,
-		input: null,
-		title: null,
-		article: null,
-		context: null
-	};
+	function clear_article (config) {
+		config.title.innerHTML = '';
+		config.context.clearRect(0, 0, 550, 400);
+		config.article.style.maxHeight = '0px';
+		config.article.style.padding = '0';
+
+		config.spinner.spin();
+		config.spinner_section.style.height = '100px';
+		config.spinner_section.appendChild(config.spinner.el);
+	}
+
+	function article_loaded (config) {
+		config.article.style.display = 'block';
+		config.article.style.padding = '15px 20px';
+		config.spinner_section.style.height = '0px';
+		config.spinner.stop();
+	}
+
+	function organize_data (data) {
+		var subreddits = Object.keys(data);
+		var ordered = subreddits.map(function(subreddit) {
+			return {
+				name: subreddit,
+				score: data[subreddit]
+			}
+		}).sort(function(a, b) {
+			return a.score > b.score ? -1 : 1;
+		});
+
+		return {
+			labels: ordered.map(function(subreddit) { return subreddit.name }),
+			dataset: ordered.map(function(subreddit) { return subreddit.score })
+		};
+	}
+
 	function onload() {
-		config.submit = document.querySelector('form button');
-		config.input = document.querySelector('form input');
-		config.title = document.querySelector('form > article h1');
-		config.article = document.querySelector('form > article');
-		config.context = document.querySelector('article canvas').getContext('2d');
+		var config = {
+			// search
+			submit: document.querySelector('form button'),
+			input: document.querySelector('form input'),
+			
+			// submission article
+			article: document.querySelector('form > article'),
+			title: document.querySelector('form > article h1'),
+			context: document.querySelector('article canvas').getContext('2d'),
+			chart: {
+				scaleShowGridLines: false,
+				scaleFontSize: 16
+			},
+
+			// spinner
+			spinner_section: document.querySelector('form > spinner'),
+			spinner: new Spinner({
+				color: 'white'
+			})
+		};
+
+		
+		config.spinner.stop();
+
+		config.article.addEventListener('transitionend', function() {
+			if (config.article.style.maxHeight === '0px') {
+				config.article.style.display = 'none';
+			}
+		});
 
 		config.submit.addEventListener('click', function() {
+			clear_article(config);
+
 			post('/classify', {
 				url: config.input.value
 			}).then(function(response) {
-				config.article.style.display = 'block';
+				article_loaded(config);
+				
 				setTimeout(function() {
 					config.article.style.maxHeight = '550px';
 				}, 0);
 				config.title.innerText = response.title;
 
+				var data = organize_data(response.data);
 				new Chart(config.context).Bar({
-					labels: Object.keys(response.data),
+					labels: data.labels,
 					datasets: [{
 						fillColor : "rgba(151,187,205,0.5)",
 						strokeColor : "rgba(151,187,205,1)",
-						data: Object.keys(response.data).map(function(key) {
-							return response.data[key];
-						})
+						data: data.dataset
 					}]
-				}, {
-					scaleShowGridLines: false,
-					scaleStepWidth: 20,
-					scaleSteps: 5
-				});
+				}, config.chart);
 			}).catch(function(error) {
 				window.alert('Sorry, we couldn\'t parse this url! Try another.');
 				logError(error);
+			}).then(function() {
+				config.spinner.stop();
 			});
 		});
 	}
