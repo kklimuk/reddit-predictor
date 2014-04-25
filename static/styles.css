@@ -20,13 +20,39 @@ h1, h2, h3, h4, h5 {
 	margin: 0 0 20px;
 }
 
+.button {
+	outline: none;
+
+	height: 48px;
+	padding: 0 20px;
+	
+	border: 0;
+	border-radius: 5px;
+	
+	color: #434853;
+	text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+	line-height: 48px;
+	font-size: 24px;
+	text-align: center;
+	text-decoration: none;
+
+	background: #E5E5E5;
+}
+
+.button:hover {
+	background: #EEE;
+}
+
+.button:active {
+	background: #D5D5D5;
+}
+
 form {
 	min-width: 200px;
 	width: 45%;
 }
 
 form > h1 {
-	margin-top: 20px;
 	font-variant: small-caps;
 	font-size: 2.3em;
 
@@ -41,6 +67,7 @@ form > h1 > img {
 
 form > section {
 	display: flex;
+	margin-bottom: 20px;
 }
 
 form > section > input {
@@ -51,7 +78,7 @@ form > section > input {
 
 	width: 100%;
 	height: 48px;
-	padding: 0 20px;
+	padding: 0 10px;
 
 	color: #434853;
 	text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
@@ -63,24 +90,9 @@ form > section > input {
 }
 
 form > section > button {
-	outline: none;
-	cursor: pointer;
-
-	padding: 0 20px;
 	margin: 0;
-	
-	border: 0;
-	border-left: 3px solid #BBB;
-	border-radius: 0 5px 5px 0;
-	
-	color: #434853;
-	text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
-	font-size: 24px;
-	background: #E5E5E5;
-}
-
-form > section > button:active {
-	background: #D5D5D5;
+	border-left: 3px solid #BBB !important;
+	border-radius: 0 5px 5px 0 !important;
 }
 
 form > article {
@@ -108,6 +120,11 @@ form > article > h1 {
 form > article > canvas {
 	display: block;
 	margin: 0 auto;
+}
+
+form > article > a {
+	display: block;
+	margin-top: 10px;
 }
 
 form > spinner {

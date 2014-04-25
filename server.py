@@ -58,8 +58,6 @@ import json
 
 from flask import Flask, send_from_directory, request
 from helpers.EntryParser import EntryParser
-from prediction.PredictEntry import predict_subreddits
-
 app = Flask(__name__)
 entry_parser = EntryParser()
 

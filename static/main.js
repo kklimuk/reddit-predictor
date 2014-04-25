@@ -74,6 +74,7 @@
 			// submission article
 			article: document.querySelector('form > article'),
 			title: document.querySelector('form > article h1'),
+			link: document.querySelector('form > article a'),
 			context: document.querySelector('article canvas').getContext('2d'),
 			chart: {
 				scaleShowGridLines: false,
@@ -99,8 +100,10 @@
 		config.submit.addEventListener('click', function() {
 			clear_article(config);
 
+			var url = config.input.value;
+
 			post('/classify', {
-				url: config.input.value
+				url: url
 			}).then(function(response) {
 				article_loaded(config);
 				
@@ -110,6 +113,8 @@
 				config.title.innerText = response.title;
 
 				var data = organize_data(response.data);
+				config.link.href = 'http://reddit.com/r/' + data.labels[0] + '/submit/?url=' + 
+					window.encodeURI(url) + '&title=' + window.encodeURIComponent(response.title);
 				new Chart(config.context).Bar({
 					labels: data.labels,
 					datasets: [{
