@@ -41,7 +41,14 @@ def predict_subreddits(data):
 	for i, subreddit in enumerate(subreddits):
 		prediction_map[subreddit] = predictions[0][i]
 	
-	return prediction_map
+	feature_names = vect.get_feature_names()
+	feature_map = {}
+	#print type(X_test.indices)
+	for i, index in enumerate(X_test.indices):
+		feature_map[feature_names[index]]=X_test.data[i]
+
+	return prediction_map, sorted(feature_map.iteritems(), key=operator.itemgetter(1), reverse=True)[:20]
+
 
 def load_best():
 	f = open('./prediction/84linearsvcClassify.pickle')
