@@ -9,12 +9,13 @@ import re
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction import DictVectorizer
 from nltk.stem.porter import PorterStemmer
-import tldextract
+#import tldextract
 import string
-
+from sklearn.feature_selection import SelectKBest, chi2
+import operator
 
 ALPHABET = '^[a-zA-Z]+$'
-redditStopWords = [line.strip() for line in open("./classification/RedditStopWords.txt")]
+redditStopWords = [line.strip() for line in open("../classification/RedditStopWords.txt")]
 subreddits = ['books','music','politics','science','technology','television','worldnews']
 	
 def clean(text):
@@ -41,18 +42,24 @@ def predict_subreddits(data):
 	print classifier.predict(X_test)
 
 	predictions = classifier.decision_function(X_test)
-	
+
 	for i, subreddit in enumerate(subreddits):
 		prediction_map[subreddit] = predictions[0][i]
-	
-	return prediction_map
+
+	feature_names = vect.get_feature_names()
+	feature_map = {}
+	#print type(X_test.indices)
+	for i, index in enumerate(X_test.indices):
+		feature_map[feature_names[index]]=X_test.data[i]
+
+	return prediction_map, sorted(feature_map.iteritems(), key=operator.itemgetter(1), reverse=True)[:20]
 
 def load_best():
-	f = open('./prediction/84linearsvcClassify.pickle')
+	f = open('./84linearsvcClassify.pickle')
 	classifier = pickle.load(f)
 	f.close()
 	
-	f = open('./prediction/84linearsvcVect.pickle')
+	f = open('./84linearsvcVect.pickle')
 	vect = pickle.load(f)
 	f.close()
 	
@@ -85,4 +92,4 @@ Take the various (and now abundant) transportation-related apps like Uber, Lyft 
 
 How can cloud providers learn from their success? We should strive to create an experience so useful that users can’t imagine working without it. Asana is already doing that with project management – with some users abandoning email entirely, saying, “Asana or bust” after getting up and running with their workflow solution. dotloop is another that has revolutionized how people work in real estate, encouraging almost 1 million agents and brokers to trade in FAX machines and scanners for cloud software – and creating the opportunity to get deals done on their mobile devices.
 '''
-	print predict_subreddits(sample)
+	print predict_subreddits(sample)[1]
