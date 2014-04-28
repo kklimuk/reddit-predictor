@@ -1,0 +1,39 @@
+No handlers could be found for logger "tldextract"
+LinearSVC(C=1.0, class_weight=None, dual=True, fit_intercept=True,
+     intercept_scaling=1, loss=l2, multi_class=ovr, penalty=l2,
+     random_state=None, tol=0.0001, verbose=0)
+5-fold cross validation:
+[ 0.83700441  0.83700441  0.83185841  0.88495575  0.80088496]
+mean score: 0.838 (+/-0.013)
+
+
+accuracy on training set =  1.0
+accuracy on testing set =  0.837455830389
+             precision    recall  f1-score   support
+
+      books       0.89      0.81      0.85        31
+      music       0.82      0.64      0.72        14
+   politics       0.91      0.78      0.84        40
+    science       0.89      0.92      0.90        71
+ technology       0.72      0.86      0.78        36
+ television       0.87      0.87      0.87        39
+  worldnews       0.76      0.81      0.79        52
+
+avg / total       0.84      0.84      0.84       283
+
+confusion matrix
+[[25  0  0  1  2  2  1]
+ [ 1  9  0  0  2  1  1]
+ [ 0  0 31  0  2  1  6]
+ [ 0  1  0 65  3  0  2]
+ [ 0  1  1  2 31  0  1]
+ [ 2  0  0  0  1 34  2]
+ [ 0  0  2  5  2  1 42]]
+
+books: library story writing stories fiction read reading novel books book
+music: songs grooveshark song kanye rock tour rap album band music
+politics: sanders senator views comcast debate state obama senate marijuana congress
+science: planet water scientists dna journal cells university research researchers study
+technology: toyota internet mobile software apple users heartbleed google tech technology
+television: geldof nbc wwe drama hbo television episodes season episode series
+worldnews: russia shark told chinese pope country china minister government said
