@@ -1,4 +1,4 @@
-(function() {
+(function(WordCloud) {
 	'use strict';
 
 	function logError (error) {
@@ -48,7 +48,7 @@
 		config.spinner.stop();
 	}
 
-	function organize_data (data) {
+	function organize_prediction (data) {
 		var subreddits = Object.keys(data);
 		var ordered = subreddits.map(function(subreddit) {
 			return {
@@ -65,6 +65,17 @@
 		};
 	}
 
+	function normalize_salience (data) {
+		var average_score = data.reduce(function(acc, entry) {
+			return acc + entry[1];
+		}, 0) / data.length;
+
+		return data.map(function(entry) {
+			entry[1] = Math.round(entry[1] / average_score * 50);
+			return entry;
+		});
+	}
+
 	function onload() {
 		var config = {
 			// search
@@ -75,11 +86,14 @@
 			article: document.querySelector('form > article'),
 			title: document.querySelector('form > article h1'),
 			link: document.querySelector('form > article a'),
-			context: document.querySelector('article canvas').getContext('2d'),
+			context: document.querySelector('article #chart').getContext('2d'),
 			chart: {
 				scaleShowGridLines: false,
 				scaleFontSize: 16
 			},
+
+			// wordcloud
+			wordcloud: document.querySelector('canvas#wordcloud'),
 
 			// spinner
 			spinner_section: document.querySelector('form > spinner'),
@@ -108,21 +122,30 @@
 				article_loaded(config);
 				
 				setTimeout(function() {
-					config.article.style.maxHeight = '550px';
+					config.article.style.maxHeight = '900px';
 				}, 0);
 				config.title.innerText = response.title;
 
-				var data = organize_data(response.data);
-				config.link.href = 'http://reddit.com/r/' + data.labels[0] + '/submit/?url=' + 
-					window.encodeURI(url) + '&title=' + window.encodeURIComponent(response.title);
+				var data = response.data,
+				prediction = organize_prediction(data['prediction']),
+				salient_words = normalize_salience(data['salient_words']);
+
+				config.link.href = 'http://reddit.com/r/' + prediction.labels[0] + '/submit/?url=' + 
+				window.encodeURI(url) + '&title=' + window.encodeURIComponent(response.title);
 				new Chart(config.context).Bar({
-					labels: data.labels,
+					labels: prediction.labels,
 					datasets: [{
-						fillColor : "rgba(151,187,205,0.5)",
-						strokeColor : "rgba(151,187,205,1)",
-						data: data.dataset
+						fillColor : "rgba(67,72,83,1)",
+						strokeColor : "rgba(238, 238, 238, 1)",
+						data: prediction.dataset
 					}]
 				}, config.chart);
+
+				WordCloud(config.wordcloud, {
+					rotateRatio: 0.5,
+					color: '#434853',
+					list: salient_words
+				});
 			}).catch(function(error) {
 				window.alert('Sorry, we couldn\'t parse this url! Try another.');
 				logError(error);
@@ -130,7 +153,7 @@
 				config.spinner.stop();
 			});
 		});
-	}
+}
 
-	window.addEventListener('DOMContentLoaded', onload);
-})();
+window.addEventListener('DOMContentLoaded', onload);
+})(window.WordCloud);

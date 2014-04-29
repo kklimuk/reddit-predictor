@@ -12,7 +12,7 @@ import string
 
 
 ALPHABET = '^[a-zA-Z]+$'
-redditStopWords = [line.strip() for line in open("./classification/RedditStopWords.txt")]
+redditStopWords = [ line.strip() for line in open("./classification/RedditStopWords.txt") ]
 subreddits = ['books','music','politics','science','technology','television','worldnews']
 	
 def clean(text):
@@ -22,7 +22,7 @@ def tokenize(text):
 	tokens = []
 	for token in nltk.wordpunct_tokenize(text):
 		token = clean(token)
-		if len(token) >2 and re.match(ALPHABET,token) and token not in redditStopWords:
+		if len(token) > 2 and re.match(ALPHABET,token) and token not in redditStopWords:
 		   tokens.append(token)
 	return tokens
 
@@ -42,12 +42,12 @@ def predict_subreddits(data):
 		prediction_map[subreddit] = predictions[0][i]
 	
 	feature_names = vect.get_feature_names()
-	feature_map = {}
-	#print type(X_test.indices)
-	for i, index in enumerate(X_test.indices):
-		feature_map[feature_names[index]]=X_test.data[i]
+	features = sorted({ 
+		feature_names[feature_index]: X_test.data[index] \
+		for index, feature_index in enumerate(X_test.indices) 
+	}.items(), key=lambda entry: entry[1], reverse=True)
 
-	return prediction_map, sorted(feature_map.iteritems(), key=operator.itemgetter(1), reverse=True)[:20]
+	return prediction_map, features[:20]
 
 
 def load_best():
@@ -78,19 +78,25 @@ def index():
 def classifier():
 	try:
 		url = request.get_json()['url']
-		if url in url_map:
-			return url_map[url]
-		else:
+		if url not in url_map:
 			title, data = entry_parser.get_title_and_content(url)
-			answer = predict_subreddits(data)
+			prediction, salient_words = predict_subreddits(data)
 
 			url_map[url] = json.dumps({
 				'title': title,
-				'data': { key: value for key, value in answer.iteritems() }
+				'data': {
+					'prediction': { key: value for key, value in prediction.iteritems() },
+					'salient_words': salient_words
+				}
 			})
-			return url_map[url]
+
+		return url_map[url], 200, {
+			'Content-Type': 'application/json'
+		}
 	except Exception, e:
-		return json.dumps({ 'error': 'could not parse link and/or content'}), 400
+		return json.dumps({ 'error': 'could not parse link and/or content'}), 400, {
+			'Content-Type': 'application/json'
+		}
 
 if __name__ == '__main__':
 	app.run('0.0.0.0', debug=True)
