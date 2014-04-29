@@ -28,8 +28,15 @@ import csv
 csv.field_size_limit(sys.maxsize)
 import tldextract
 
-#Sources used: lab 5's prepare.py
+#Earlier version of the classifier that can incorporate upvotes, downvote, domain metadata into the features.
+#author: Austin
+
+#Sources used:
+#lab 5's prepare.py
 #http://blog.mafr.de/2012/04/15/scikit-learn-feature-extractio/
+#http://gemelli.spacescience.org/~hahnjm/data_science/abstracts/abstracts.py
+#http://stackoverflow.com/questions/19466868/how-do-i-do-classification-using-tfidfvectorizer-plus-metadata-in-practice
+#http://stackoverflow.com/questions/11116697/how-to-get-most-informative-features-for-scikit-learn-classifiers
 
 redditStopWords = [line.strip() for line in open("RedditStopWords.txt")]
 #[MultinomialNB(alpha=0.5), OneVsRestClassifier(LinearSVC(random_state=0)),

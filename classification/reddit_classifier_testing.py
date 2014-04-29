@@ -31,9 +31,16 @@ from nltk.corpus import wordnet
 import string
 import csv
 csv.field_size_limit(sys.maxsize)
-#Sources used: lab 5's prepare.py
+
+#This class does the actual cross-validation testing of classifiers.
+#author: Austin
+
+#Sources used:
+#lab 5's prepare.py
 #http://blog.mafr.de/2012/04/15/scikit-learn-feature-extractio/
-#http://stackoverflow.com/questions/22077046/how-to-normalize-ranked-data-in-scikit-learn
+#http://gemelli.spacescience.org/~hahnjm/data_science/abstracts/abstracts.py
+#http://stackoverflow.com/questions/19466868/how-do-i-do-classification-using-tfidfvectorizer-plus-metadata-in-practice
+#http://stackoverflow.com/questions/11116697/how-to-get-most-informative-features-for-scikit-learn-classifiers
 
 classifiers = [
 	#BernoulliNB(),
@@ -77,8 +84,10 @@ def run_tests():
     with open('NewRedditSampleAll.csv', 'r') as datafile:
 	reader = csv.reader(datafile)
         for row in reader:
+            #include only 7 subreddits, so exclude the following 2.
 	    if row[0] in ['todayilearned','news']: continue
             if tldextract.extract(row[3]).domain == 'twitter': continue
+            #exclude articles under 100 tokens
       	    if len(tokenize(row[len(row)-1]))<100: continue
 	    data.append(row[len(row)-1])
 	    subreddits.append(row[0])
@@ -118,7 +127,8 @@ def crossvalidate(classifier, data, subreddits):
     print
     
     print_top10(tfv, classifier, sorted(list(set(subreddits))))
-    
+
+ #http://stackoverflow.com/questions/11116697/how-to-get-most-informative-features-for-scikit-learn-classifiers   
 def print_top10(vectorizer, clf, class_labels):
     """Prints features with the highest coefficient values, per class"""
     feature_names = vectorizer.get_feature_names()
@@ -134,7 +144,6 @@ def evaluate_cross_validation(clf, x, y, K):
     print scores
     print ("mean score: {0:.3f} (+/-{1:.3f})").format(np.mean(scores), sem(scores))
 
-
 def save_best_classifier(classifier): 
     f = open('my_classifier.pickle', 'wb')
     pickle.dump(classifier, f)
@@ -145,16 +154,6 @@ def load_best_classifier():
     classifier = pickle.load(f)
     f.close()
     return classifier
-
-    
-#clf = Pipeline([('chi2', SelectKBest(chi2, k=1000))
-#weight function for KNN -- not working. predict function???
-def weight_upvotes(distances):
-    #print "DISTANCES:"
-    #print distances
-    #for i in range(0, len(distances)):
-    # distances[i] /= int(upvotes[i])
-    return distances
 
 if __name__ == '__main__':
     run_tests()
